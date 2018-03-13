@@ -15,63 +15,97 @@ display_height = 600
 
 gamedisplay = pygame.display.set_mode((display_width,display_height))
 
+icon = pygame.image.load(r'G:\Python\pygames\icon.png')
+
+pygame.display.set_icon(icon)
+
 pygame.display.set_caption('Killer')
 
 gameexit  = False 
 
 img = pygame.image.load(r'G:\Python\pygames\snake.png')
+apple = pygame.image.load(r'G:\Python\pygames\apple.png')
 clock = pygame.time.Clock()
 
 block_size =20
 FPS = 15
-#direction="right"
-font = pygame.font.SysFont(None,25)
+smallfont = pygame.font.SysFont('comicsansms',25)
+mediumfont = pygame.font.SysFont('comicsansms',40)
+largefont = pygame.font.SysFont('comicsansms',60)
+
+
+direction="right"
+
 
 def snake(block_size,snakelist):
-    #if(direction == "right"):
-       # head=pygame.transform.rotate(img,270)
-    #if(direction == "left"):
-        #head=pygame.transform.rotate(img,90)
-    #if(direction == "up"):
-        #head=img
-    #if(direction == "down"):
-        #head=pygame.transform.rotate(img,180)
+    if(direction == "right"):
+        head=pygame.transform.rotate(img,270)
+    if(direction == "left"):
+        head=pygame.transform.rotate(img,90)
+    if(direction == "up"):
+        head=img
+    if(direction == "down"):
+        head=pygame.transform.rotate(img,180)
     
-    #gamedisplay.blit(head,(snakelist[-1][0],snakelist[-1][1]))
-    for XnY in snakelist:
+    gamedisplay.blit(head,(snakelist[-1][0],snakelist[-1][1]))
+    for XnY in snakelist[:-1]:
         
          pygame.draw.rect(gamedisplay,green,[XnY [0],XnY[1],block_size,block_size])
         
-def objects(text,color):
-    textsurface = font.render(text,True,color)
+def objects(text,color,size):
+    if (size == 'small'): 
+        textsurface = smallfont.render(text,True,color)
+    if (size == 'medium'): 
+        textsurface = mediumfont.render(text,True,color)
+    if (size == 'large'): 
+        textsurface = largefont.render(text,True,color)
     return textsurface,textsurface.get_rect()
 
-def message_to_screen(msg,color,y_displace=0):
-    textsurface,textrect = objects(msg,color)
+def message_to_screen(msg,color,y_displace=0,size="small"):
+    textsurface,textrect = objects(msg,color,size)
     #screen_text = font.render(msg,True,color)
     #gamedisplay.blit(screen_text,(display_width/2,display_height/2))
     textrect.center=(display_width/2),(display_height/2)+y_displace
     gamedisplay.blit(textsurface,textrect)
 
-#def intro():
 
- #   intro= True
+    
+def intro():
+    intro= True
 
-  #  while intro:
-   #     gamedisplay.fill(white)
-    #    message_to_screen("Game Over !!!",red)
-     #   message_to_screen("  Press C to Play Again. Q to Quit",black,50)
+    while intro == True:
+        gamedisplay.fill(white)
+        
+        message_to_screen("Welcome to PySnake !!!",red,-50,size='large')
+        message_to_screen("  Press C to Start. Q to Quit",black,50,size='medium')
 
-    #pygame.display.update()
-    #clock.tick(15)
+        pygame.display.update()
+
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    gameover = False
+                    gameexit = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_c:
+                        intro= False
+                        gameLoop()
+                    if event.key == pygame.K_q:
+                        gameexit = True
+                        gameover = False
+        clock.tick(15)
+
+        
     
 def gameLoop():
+    
+    
+
     gameexit = False
     gameover = False
 
     lead_x = display_width/2
     lead_y = display_height/2
-    lead_xchange = 0
+    lead_xchange = 10
     lead_ychange = 0
     
     snakelist=[]
@@ -83,6 +117,7 @@ def gameLoop():
     
     while not gameexit:
         global direction
+        
         
         while gameover == True:
             gamedisplay.fill(white)
@@ -97,8 +132,10 @@ def gameLoop():
                     gameexit = True
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_c:
+                        
                         gameLoop()
                     if event.key == pygame.K_q:
+                        
                         gameexit = True
                         gameover = False
                         
@@ -109,19 +146,19 @@ def gameLoop():
                  gameexit = True
              if event.type == pygame.KEYDOWN:
                  if event.key == pygame.K_LEFT :
-                     #direction = "left"
+                     direction = "left"
                      lead_xchange = -block_size
                      lead_ychange = 0
                  elif event.key == pygame.K_RIGHT :
-                     #direction = "right"
+                     direction = "right"
                      lead_xchange = +block_size
                      lead_ychange = 0
                  elif event.key == pygame.K_UP :
-                    # direction = "up"
+                     direction = "up"
                      lead_ychange = -block_size
                      lead_xchange = 0
                  elif event.key == pygame.K_DOWN :
-                     #direction = "down"
+                     direction = "down"
                      lead_ychange = +block_size
                      lead_xchange = 0
 
@@ -135,7 +172,8 @@ def gameLoop():
         lead_y +=lead_ychange  
         thickness=20
         gamedisplay.fill(white)
-        pygame.draw.rect(gamedisplay,red,[randAppleX,randAppleY,thickness,thickness])
+        gamedisplay.blit(apple,(randAppleX,randAppleY))
+        #pygame.draw.rect(gamedisplay,red,[randAppleX,randAppleY,thickness,thickness])
 
         snakeHead=[]
         snakeHead.append(lead_x)
@@ -175,6 +213,6 @@ def gameLoop():
     pygame.quit()
     quit()
 
-#intro()
+intro()
 gameLoop()
 
